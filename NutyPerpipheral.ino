@@ -49,14 +49,24 @@ void setup() {
   Serial.println("end setup");
 }
 
+int counter = 0;
 void loop() {
-  // Nothing To Be Done Here
-  delay(1);
+  
+
+  //Send response
   if( nutyPeripheral.responseLen >0 ){
       for(int r = 0; r<nutyPeripheral.responseLen; r++){
         Wire1.write(nutyPeripheral.response[r]);  
       }
       nutyPeripheral.responseLen = 0;
+  }
+
+  // Nothing To Be Done Here
+  delay(1);
+  counter ++;
+  if(counter==3000){
+    nutyPeripheral.statusReport = StatusReport::Rotary(2, false);
+    counter = 0;
   }
 }
 
