@@ -1,24 +1,35 @@
 #include <Wire.h>
-byte TxByte = 0xAA;
+#include "nutyperipheral.h"
 
-byte rxData[256];
-int rxCounter = 0;
+
 
 void I2C_RequestHandler(void) {
-  Serial.println("i2c message request");
-  Wire1.write('c');
+  Serial.println("i2c message request, rxCounter: ");
+  Serial.println(rxCounter, DEC);  
   
-  Wire1.write('d');
+  attendRXMessage();
+
+  //restart reception buffer
   rxCounter = 0;
 }
 
 void I2C_ReceiveHandler(int numBytesReceived) {
   Serial.print("i2c message received, ");
-  Serial.println(numBytesReceived, DEC);
-   while (Wire.available() > 0) {
-     rxData[rxCounter] = Wire.read();
-     rxCounter+++;
+  Serial.println(numBytesReceived, DEC);  
+  
+  while (Wire1.available() > 0) {
+    byte newReadByte = Wire1.read();
+    if(rxCounter>=RXMAXLEN){
+       Serial.println("i2c ignoring TOO MUCH DATA");
+      continue;
+    }
+    rxData[rxCounter] = newReadByte;
+    rxCounter++;
+    Serial.print(" rxCounter: ");
+    Serial.print(rxCounter, DEC);  
+    Serial.println(".");
   }
+
 }
 
 void setup() {
