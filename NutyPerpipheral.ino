@@ -39,7 +39,7 @@ void setup() {
   while (!Serial) {
     ;
   }
-
+  nutyPeripheral.init(64, 1);
   Serial.println("run app :)");
   Wire1.setSDA(26);
   Wire1.setSCL(27);
@@ -52,6 +52,12 @@ void setup() {
 void loop() {
   // Nothing To Be Done Here
   delay(1);
+  if( nutyPeripheral.responseLen >0 ){
+      for(int r = 0; r<nutyPeripheral.responseLen; r++){
+        Wire1.write(nutyPeripheral.response[r]);  
+      }
+      nutyPeripheral.responseLen = 0;
+  }
 }
 
 
