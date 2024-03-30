@@ -17,7 +17,8 @@ enum RotaryEvent{
   DECREASED = 1,
   PRESSED = 2,
   RELEASED = 3,
-}
+};
+
 extern ButtonMatrix buttonsMatrix;
 class StatusReport{
   public:
