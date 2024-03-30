@@ -1,4 +1,7 @@
 from adafruit_bus_device.i2c_device import I2CDevice
+from adafruit_mcp230xx.mcp23017 import MCP23017
+import time
+import digitalio
 
 CMD_AREYOUNUTYDEVICE = 1
 CMD_STATUS = 2
@@ -62,4 +65,64 @@ class NutyPeripheral:
             
         #print(result)
         return ret
+
+class NutyMCPPeripheral:
+    mcp = None
+    
+    def __init__(self, i2cBus):
+        self.mcp = MCP23017(i2cBus)
+        self.buttonsMatrix =  [[False for i in range(6)] for i in range(6)]
+        self.columnsPin = [None for i in range(6)]
+        self.rowsPin = [None for i in range(6)]
+        self.columnsPin[0] = self.mcp.get_pin(2)
+        self.columnsPin[1] = self.mcp.get_pin(3)
+        self.columnsPin[2] = self.mcp.get_pin(4)
+        self.columnsPin[3] = self.mcp.get_pin(5)
+        self.columnsPin[4] = self.mcp.get_pin(6)
+        self.columnsPin[5] = self.mcp.get_pin(7)
+        self.rowsPin[0] = self.mcp.get_pin(8)
+        self.rowsPin[1] = self.mcp.get_pin(9)
+        self.rowsPin[2] = self.mcp.get_pin(10)
+        self.rowsPin[3] = self.mcp.get_pin(11)
+        self.rowsPin[4] = self.mcp.get_pin(12)
+        self.rowsPin[5] = self.mcp.get_pin(13)
         
+        for col in self.columnsPin :
+            col.direction = digitalio.Direction.OUTPUT                
+            col.value = False
+            
+        for row in self.rowsPin :
+            row.direction = digitalio.Direction.INPUT                
+            row.pull  = digitalio.Pull.UP    
+            
+    def getStatus(self):                
+    
+        c = 0
+        while c < 6: # per column
+            columnPin = 0
+            while columnPin < 6:
+                if columnPin==c : 
+                    self.columnsPin[columnPin].value  = False
+                else :
+                    self.columnsPin[columnPin].value  = True
+                columnPin += 1
+            time.sleep(0.001)                
+                
+            r = 0
+            while r < 6:#per row
+                currentlyPressed = self.rowsPin[r].value == False;
+                if currentlyPressed != self.buttonsMatrix[r][c] :
+                    print("Cambio de estado row: ", r)
+                    print("Cambio de estado column: ", c)
+                    self.buttonsMatrix[r][c] = currentlyPressed
+                r += 1#end of per row
+                
+                
+                
+                
+                
+            c+=1 # end of per column
+            
+                
+            
+                
