@@ -11,8 +11,8 @@ struct NutyPeripheralInfo nutyPeripheral;
 void NutyPeripheralInfo::init(byte numberOfKeys, byte id){
   m_numberOfKeys = numberOfKeys;
   m_id = id;
-  statusReport = StatusReport::None();
-  
+  //statusReport = StatusReport::None();
+  reports.clear();
 }
 
 byte NutyPeripheralInfo::numberOfKeys()const{
@@ -38,11 +38,13 @@ void attendRXMessage(){
   }
   else if( (rxCounter == 1) && (rxData[0]==CMD_STATUS)){
     //Serial.println("CMD_STATUS REQUEST");
-    nutyPeripheral.response[0] = nutyPeripheral.statusReport.type;
+    StatusReport oldestReport = StatusReport::None();
+    nutyPeripheral.reports.getOldest(oldestReport);
+    nutyPeripheral.response[0] = oldestReport.type;
     for(int j = 0; j<5; j++){
-      nutyPeripheral.response[j+1] = nutyPeripheral.statusReport.params[j];
+      nutyPeripheral.response[j+1] = oldestReport.params[j];
     }
-    nutyPeripheral.statusReport = StatusReport::None();
+    //nutyPeripheral.statusReport = StatusReport::None();
     nutyPeripheral.responseLen = 6;
   }
  

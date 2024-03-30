@@ -6,17 +6,26 @@ from adafruit_bus_device.i2c_device import I2CDevice
 import nutyPeripheral
 
 A_DEVICE_REGISTER = 0x0E  # device id register on the DS3231 board
+
+
+i2cBus = None
+deviceLeft = None
 leftSide = nutyPeripheral.NutyPeripheral();
 
-with busio.I2C(board.A5, board.A4) as i2c:
-    device = I2CDevice(i2c, 0x33)
-    bytes_read = bytearray(1)
-    
-    with device as bus_device:
-        leftSide.init(bus_device)
-            
-    while True :
-        with device as bus_device:
+#Connect to left side
+i2cBus = busio.I2C(board.A5, board.A4) 
+deviceLeft = I2CDevice(i2cBus, 0x33)
+with deviceLeft as bus_device:
+    leftSide.init(bus_device)
+#leftSide.init(deviceLeft)
+#print(deviceLeft)
+#deviceLeft = None
+#main loop            
+while True :
+    #print(deviceLeft)
+    #check left side events
+    if deviceLeft != None :
+        with deviceLeft as bus_device :
             leftSide.getStatus(bus_device)
-                
-        time.sleep(0.020)
+        
+    time.sleep(0.015)

@@ -101,7 +101,7 @@ void loop() {
             uint8_t estadoRow = digitalRead(FirstRow+r);
             bool isPressed = (estadoRow == 0);
             if(nutyPeripheral.buttonsMatrix.button(r,c).pressed!=isPressed){              
-              nutyPeripheral.statusReport = StatusReport::KeyStroke(r, c, isPressed);
+              nutyPeripheral.reports.addNew( StatusReport::KeyStroke(r, c, isPressed) );
               nutyPeripheral.buttonsMatrix.button(r,c).pressed=isPressed;
               if(isPressed){
                 Serial.print("Pressed: ");
@@ -117,7 +117,7 @@ void loop() {
         }
   }
 
-  delay(10);
+  delay(5);
   
   // counter ++;
   // if(counter==3000){

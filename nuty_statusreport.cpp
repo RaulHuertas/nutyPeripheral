@@ -22,14 +22,14 @@ StatusReport StatusReport::KeyStroke(byte row, byte column, bool pressed){
   return ret;
 }
 
-StatusReport StatusReport::Rotary(byte index, bool incremented){
+StatusReport StatusReport::Rotary(byte index, RotaryEvent event){
   StatusReport ret;
   ret.type = StatusReportType::ROTARY;
   for(int j = 0; j<5; j++){
     ret.params[j] = 0;
   }
   ret.params[0] = index;
-  ret.params[1] = incremented;
+  ret.params[1] = event;
   return ret;
 }
 
