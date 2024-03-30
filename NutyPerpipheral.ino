@@ -1,11 +1,12 @@
 #include <Wire.h>
 #include "nutyperipheral.h"
 
-
+const int FirstColumn = 12;
+const int FirstRow = 18;
 
 void I2C_RequestHandler(void) {
-  Serial.println("i2c message request, rxCounter: ");
-  Serial.println(rxCounter, DEC);  
+  //Serial.println("i2c message request, rxCounter: ");
+  //Serial.println(rxCounter, DEC);  
   
   attendRXMessage();
 
@@ -14,8 +15,8 @@ void I2C_RequestHandler(void) {
 }
 
 void I2C_ReceiveHandler(int numBytesReceived) {
-  Serial.print("i2c message received, ");
-  Serial.println(numBytesReceived, DEC);  
+  //Serial.print("i2c message received, ");
+  //Serial.println(numBytesReceived, DEC);  
   
   while (Wire1.available() > 0) {
     byte newReadByte = Wire1.read();
@@ -25,9 +26,9 @@ void I2C_ReceiveHandler(int numBytesReceived) {
     }
     rxData[rxCounter] = newReadByte;
     rxCounter++;
-    Serial.print(" rxCounter: ");
-    Serial.print(rxCounter, DEC);  
-    Serial.println(".");
+    //Serial.print(" rxCounter: ");
+    //Serial.print(rxCounter, DEC);  
+    //Serial.println(".");
   }
 
 }
@@ -41,19 +42,39 @@ void setup() {
   }
   nutyPeripheral.init(64, 1);
   Serial.println("run app :)");
+  //SETUP COMMUNICTION WITH MASTER
   Wire1.setSDA(26);
   Wire1.setSCL(27);
-  Wire1.begin(0x33);  // Initialize I2C (Slave Mode: address=0x55 )
+  Wire1.begin(0x33); 
   Wire1.onRequest(I2C_RequestHandler);
   Wire1.onReceive(I2C_ReceiveHandler);
+  //SETUP SCANNING
+  for(int column = 0; column<6; column++){
+    int columnPinNMumber = FirstColumn+column;
+    pinMode(columnPinNMumber, OUTPUT);          
+    digitalWrite(columnPinNMumber, LOW);      
+  }
+  for(int row = 0; row<6; row++){
+    int rowPinNMumber = FirstRow+row;
+    pinMode(rowPinNMumber, INPUT_PULLUP);     
+    
+  }
+  
+
+
+
+
   Serial.println("end setup");
+
+
+
 }
 
-int counter = 0;
+//int counter = 0;
 void loop() {
   
 
-  //Send response
+  //SEND RESPONSE
   if( nutyPeripheral.responseLen >0 ){
       for(int r = 0; r<nutyPeripheral.responseLen; r++){
         Wire1.write(nutyPeripheral.response[r]);  
@@ -61,13 +82,48 @@ void loop() {
       nutyPeripheral.responseLen = 0;
   }
 
-  // Nothing To Be Done Here
-  delay(1);
-  counter ++;
-  if(counter==3000){
-    nutyPeripheral.statusReport = StatusReport::Rotary(2, false);
-    counter = 0;
+  //SCAN  
+  for (int c = 0; c < 6; c++)
+  {
+        
+        for(int columnPin = 0; columnPin<6; columnPin++){
+          if(columnPin==c){
+            digitalWrite(FirstColumn+columnPin, LOW);
+          }else{
+            digitalWrite(FirstColumn+columnPin, HIGH);
+          }
+        }
+        
+        delay(1);
+        for (int r = 0; r < 6; r++)
+        {
+
+            uint8_t estadoRow = digitalRead(FirstRow+r);
+            bool isPressed = (estadoRow == 0);
+            if(nutyPeripheral.buttonsMatrix.button(r,c).pressed!=isPressed){              
+              nutyPeripheral.statusReport = StatusReport::KeyStroke(r, c, isPressed);
+              nutyPeripheral.buttonsMatrix.button(r,c).pressed=isPressed;
+              if(isPressed){
+                Serial.print("Pressed: ");
+              }else{
+                Serial.print("Released: ");
+              }
+              Serial.print("row ");
+              Serial.print(r);
+              Serial.print(", column ");
+              Serial.println(c);
+            }
+            
+        }
   }
+
+  delay(10);
+  
+  // counter ++;
+  // if(counter==3000){
+  //   nutyPeripheral.statusReport = StatusReport::Rotary(2, false);
+  //   counter = 0;
+  // }
 }
 
 
