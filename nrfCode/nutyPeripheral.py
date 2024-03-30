@@ -10,10 +10,17 @@ TYPECODE_NONE = 0
 TYPECODE_KEY_STROKE = 1
 TYPECODE_ROTARY = 2
 TYPECODE_SLIDER_VALUE_CHANGED = 3
-
-class NutyPeripheral:
+class NutyPeripheralBase :
+     def __init__(self):
+         self.rowOffset = 0;
+         self.columnOffset = 0;
+         
+class NutyPeripheral(NutyPeripheralBase):
     id = 0
     nKeys = 0
+    def __init__(self):
+        super().__init__()
+        
     def init(self, bus_device):
         bytesToWrite = bytearray(1)
         bytesToWrite[0] = CMD_AREYOUNUTYDEVICE
@@ -66,10 +73,11 @@ class NutyPeripheral:
         #print(result)
         return ret
 
-class NutyMCPPeripheral:
+class NutyMCPPeripheral(NutyPeripheralBase):
     mcp = None
     
     def __init__(self, i2cBus):
+        super().__init__()
         self.mcp = MCP23017(i2cBus)
         self.buttonsMatrix =  [[False for i in range(6)] for i in range(6)]
         self.columnsPin = [None for i in range(6)]

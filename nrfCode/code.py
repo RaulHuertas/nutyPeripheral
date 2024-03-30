@@ -24,6 +24,8 @@ with deviceLeft as bus_device:
 #connect to rightSide MCP
 
 rightSideMCP = nutyPeripheral.NutyMCPPeripheral(i2cBus)
+rightSideMCP.rowOffset = 0
+rightSideMCP.columnOffset = 6
 #leftSide.init(deviceLeft)
 #print(deviceLeft)
 #deviceLeft = None
