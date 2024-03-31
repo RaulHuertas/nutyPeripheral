@@ -15,12 +15,19 @@ class ButtonsState :
         self.buttonsAssignations =  [[ButtonRegister() for i in range(16)] for i in range(16)]
         self.assignFactory()
         self.kbd = Keyboard(usb_hid.devices)
+        self.mediaConsumerControl = ConsumerControl(usb_hid.devices)
+
     def buttonAssignation(self, row, column):
          return self.buttonsAssignations[row][column]
         
     def assignKeyCode(self, row, column, keycode):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.CHARACTER)
         self.buttonAssignation(row,column).keyAssignation.keycode = keycode
+        
+    def assignMedia(self, row, column, consumerControlCode):
+        self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.MEDIA)
+        self.buttonAssignation(row,column).mediaConsumerControlCode = consumerControlCode
+        
         
     def assignAsFn(self, row, column):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.FN)
@@ -92,9 +99,9 @@ class ButtonsState :
         self.assignKeyCode(4, 11, Keycode.PAUSE)
         
         #Modifiers bottom row
-        #self.assignKeyCode(5, 0, Keycode.CONTROL)
-        #self.assignKeyCode(5, 1, Keycode.ALT)
-        #self.assignKeyCode(5, 2, Keycode.GUI)
+        self.assignMedia(5, 0, ConsumerControlCode.VOLUME_DECREMENT)
+        self.assignMedia(5, 1, ConsumerControlCode.MUTE)
+        self.assignMedia(5, 2, ConsumerControlCode.VOLUME_INCREMENT)
         self.assignKeyCode(5, 3, Keycode.SHIFT)
         #self.assignKeyCode(5, 4, Keycode.TAB)
         self.assignKeyCode(5, 5, Keycode.FORWARD_SLASH)
@@ -119,7 +126,11 @@ class ButtonsState :
             else:
                 #print("released ", assignation.keyAssignation.keycode)
                 self.kbd.release(assignation.keyAssignation.keycode)
-
+        elif assignation.isMediaKey():
+            if pressed :
+                self.mediaConsumerControl.press(assignation.mediaConsumerControlCode)
+            else:
+                self.mediaConsumerControl.release()
     
 
 

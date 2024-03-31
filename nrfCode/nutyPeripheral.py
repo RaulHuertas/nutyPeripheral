@@ -50,32 +50,34 @@ class NutyPeripheral(NutyPeripheralBase):
         ret = False;
         try :
             bus_device.readinto(result)
-            ret = True
-            typeCodeReceived = result[0]
-           
-            if typeCodeReceived == TYPECODE_NONE:
-                #print("TYPECODE_NONE RECEIVED")
-                pass
-            elif typeCodeReceived == TYPECODE_KEY_STROKE:
-                #print("TYPECODE_KEY_STROKE RECEIVED")
-                row = result[1]
-                column = result[2]
-                pressed = result[3]
-                #print("row: ", row)
-                #print("column: ", column)
-                #print("pressed: ", pressed)
-                self.buttonsState.triggerKey(
-                    row+self.rowOffset,
-                    column+self.columnOffset,
-                    pressed!=0
-                )
-            elif typeCodeReceived == TYPECODE_ROTARY:
-                print("TYPECODE_ROTARY RECEIVED")
-            elif typeCodeReceived == TYPECODE_SLIDER_VALUE_CHANGED:
-                print("TYPECODE_SLIDER_VALUE_CHANGED RECEIVED")                
+            ret = True  
         except:
                 print("error reading i2c")
+        if not ret :
+            return
             
+        typeCodeReceived = result[0]
+           
+        if typeCodeReceived == TYPECODE_NONE:
+            #print("TYPECODE_NONE RECEIVED")
+            pass
+        elif typeCodeReceived == TYPECODE_KEY_STROKE:
+            #print("TYPECODE_KEY_STROKE RECEIVED")
+            row = result[1]
+            column = result[2]
+            pressed = result[3]
+            #print("row: ", row)
+            #print("column: ", column)
+            #print("pressed: ", pressed)
+            self.buttonsState.triggerKey(
+                row+self.rowOffset,
+                column+self.columnOffset,
+                pressed!=0
+            )    
+        elif typeCodeReceived == TYPECODE_ROTARY:
+            print("TYPECODE_ROTARY RECEIVED")
+        elif typeCodeReceived == TYPECODE_SLIDER_VALUE_CHANGED:
+            print("TYPECODE_SLIDER_VALUE_CHANGED RECEIVED")   
         #print(result)
         return ret
 

@@ -76,15 +76,15 @@ class ButtonRegister :
             return False
         return self.keyAssignation.keyCode == KeyCode.RIGHT_ALT
     def isFn(self):        
-        return self.keyAssignation.selection == KeyCode.FN
+        return self.keyAssignation.selection == KeyAssignation.FN
     def isLayerOrSettings(self):        
-        return self.keyAssignation.selection == KeyCode.LAYER_OR_SETTINGS
+        return self.keyAssignation.selection == KeyAssignation.LAYER_OR_SETTINGS
     def isMouseModeEnabler(self):        
-        return self.keyAssignation.selection == KeyCode.MOUSE_MODE
+        return self.keyAssignation.selection == KeyAssignation.MOUSE_MODE
     def isMIDI(self):        
-        return self.keyAssignation.selection == KeyCode.MIDI
+        return self.keyAssignation.selection == KeyAssignation.MIDI
     def isMediaKey(self):        
-        return self.keyAssignation.selection == KeyCode.MEDIA
+        return self.keyAssignation.selection == KeyAssignation.MEDIA
         
 class MouseState :
     def __init__(self):
