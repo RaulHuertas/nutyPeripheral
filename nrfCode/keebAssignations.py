@@ -10,10 +10,14 @@ class KeyAssignation(object):
     MEDIA = 2
     FN = 3
     MOUSE_MODE = 4
-    MIDI = 5
-    LAYER_OR_SETTINGS = 6
+    MOUSE_CODE = 5
+    MIDI = 6
+    LAYER_OR_SETTINGS = 7
     def __init__( self, newVal ):
         self.keycode = None
+        self.mediaConsumerControlCode = None
+        self.midiCode = None
+        self.mouseCode = None
         if newVal in ( self.NONE, self.CHARACTER, self.MEDIA , self.FN, self.MOUSE_MODE, self.MIDI, self.LAYER_OR_SETTINGS):            
             self.selection= newVal
         else :
@@ -60,7 +64,7 @@ class ButtonRegister :
         self.keyAssignation = KeyAssignation(KeyAssignation.NONE)
         self.keyFnAssignation = KeyAssignation(KeyAssignation.NONE) #triggered when Fn is pressed
         self.mouseAction =  MouseAction(MouseAction.NONE)
-        self.mediaConsumerControlCode = ConsumerControlCode()
+        #self.mediaConsumerControlCode =
     def isCharacter(self):
         return self.keyAssignation.selection == KeyAssignation.CHARACTER
     def isShift(self):

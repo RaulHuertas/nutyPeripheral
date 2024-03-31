@@ -24,17 +24,30 @@ class ButtonsState :
     def buttonAssignation(self, row, column):
          return self.buttonsAssignations[row][column]
         
-    def assignKeyCode(self, row, column, keycode, fnKeyCode = None):
+    def assignKeyCode(self, row, column, keycode, fnKeyAssignation = KeyAssignation.NONE, fnCode = None):
         if keycode!=None :
             self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.CHARACTER)
             self.buttonAssignation(row,column).keyAssignation.keycode = keycode
         
-        if fnKeyCode!=None :
-           self.buttonAssignation(row,column).keyFnAssignation.keycode = fnKeyCode
+#         if fnKeyAssignation  in [
+#             KeyAssignation.CHARACTER,
+#             KeyAssignation.MOUSE_CODE,
+#             KeyAssignation.MEDIA,
+#             KeyAssignation.MIDI
+#         ] :
+        if fnKeyAssignation==KeyAssignation.CHARACTER :
+           self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.CHARACTER)
+           self.buttonAssignation(row,column).keyFnAssignation.keycode = fnCode
+           print("fn function assigned")
+        if fnKeyAssignation==KeyAssignation.MEDIA :
+           self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.MEDIA)
+           self.buttonAssignation(row,column).keyFnAssignation.mediaConsumerControlCode = fnCode        
+        
+        
         
     def assignMedia(self, row, column, consumerControlCode):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.MEDIA)
-        self.buttonAssignation(row,column).mediaConsumerControlCode = consumerControlCode
+        self.buttonAssignation(row,column).keyAssignation.mediaConsumerControlCode = consumerControlCode
         
         
     def assignAsFn(self, row, column):
@@ -49,19 +62,19 @@ class ButtonsState :
     
     def assignFactory(self):
         #numbers top row
-        self.assignKeyCode(0, 0, Keycode.ONE, Keycode.F1)
-        self.assignKeyCode(0, 1, Keycode.TWO, Keycode.F2)
-        self.assignKeyCode(0, 2, Keycode.THREE, Keycode.F3)
-        self.assignKeyCode(0, 3, Keycode.FOUR, Keycode.F4)
-        self.assignKeyCode(0, 4, Keycode.FIVE, Keycode.F5)
-        self.assignKeyCode(0, 5, None, Keycode.F11)      
+        self.assignKeyCode(0, 0, Keycode.ONE, KeyAssignation.CHARACTER, Keycode.F1)
+        self.assignKeyCode(0, 1, Keycode.TWO, KeyAssignation.CHARACTER, Keycode.F2)
+        self.assignKeyCode(0, 2, Keycode.THREE, KeyAssignation.CHARACTER, Keycode.F3)
+        self.assignKeyCode(0, 3, Keycode.FOUR, KeyAssignation.CHARACTER, Keycode.F4)
+        self.assignKeyCode(0, 4, Keycode.FIVE, KeyAssignation.CHARACTER, Keycode.F5)
+        self.assignKeyCode(0, 5, None, KeyAssignation.CHARACTER, Keycode.F11)      
         
-        self.assignKeyCode(0, 6, None, Keycode.F12)      
-        self.assignKeyCode(0, 7, Keycode.SIX, Keycode.F6)
-        self.assignKeyCode(0, 8, Keycode.SEVEN, Keycode.F7)
-        self.assignKeyCode(0, 9, Keycode.EIGHT, Keycode.F8)
-        self.assignKeyCode(0, 10, Keycode.NINE, Keycode.F9)
-        self.assignKeyCode(0, 11, Keycode.ZERO, Keycode.F10)
+        self.assignKeyCode(0, 6, None, KeyAssignation.CHARACTER, Keycode.F12)      
+        self.assignKeyCode(0, 7, Keycode.SIX, KeyAssignation.CHARACTER, Keycode.F6)
+        self.assignKeyCode(0, 8, Keycode.SEVEN, KeyAssignation.CHARACTER, Keycode.F7)
+        self.assignKeyCode(0, 9, Keycode.EIGHT, KeyAssignation.CHARACTER, Keycode.F8)
+        self.assignKeyCode(0, 10, Keycode.NINE, KeyAssignation.CHARACTER, Keycode.F9)
+        self.assignKeyCode(0, 11, Keycode.ZERO, KeyAssignation.CHARACTER, Keycode.F10)
         #characters top row
         self.assignKeyCode(1, 0, Keycode.Q)
         self.assignKeyCode(1, 1, Keycode.W)
@@ -132,41 +145,47 @@ class ButtonsState :
         self.assignKeyCode(5, 10, Keycode.DOWN_ARROW)
         self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW)
         
-    def trigerFnFunction(self, row, column, pressed):
-        assignation = self.buttonAssignation(row, column)
-        if assignation.keyAssignation.selection == KeyAssignation.NONE :
-            return
-        if assignation.keyFnAssignation.keycode == None :
-            return;
-        
+    def triggerCharacter(self, keycode, pressed):
+        print("triggerCharacter")
         if pressed :
-            self.kbd.press(assignation.keyFnAssignation.keycode)
+            self.kbd.press(keycode)
+        else:            
+            self.kbd.release(keycode)
+            
+    def triggerMediaCode(self, ccCode, pressed):
+        if pressed :
+            self.mediaConsumerControl.press(ccCode)
         else:
-            self.kbd.release(assignation.keyFnAssignation.keycode)
+            self.mediaConsumerControl.release()
+    def trigerFnFunction(self, row, column, pressed):
+        assignation = self.buttonAssignation(row, column)       
+        
+        if assignation.keyFnAssignation.selection == KeyAssignation.CHARACTER :
+            self.triggerCharacter(assignation.keyFnAssignation.keycode, pressed);
+        if assignation.keyFnAssignation.selection == KeyAssignation.MEDIA :
+            self.triggerMediaCode(assignation.keyFnAssignation.mediaConsumerControlCode, pressed);
             
     def triggerKey(self, row, column, pressed):
-        #print("trigger row: ", row)
-        #print("trigger column: ", column)
-        #print("trigger pressed: ", pressed)
+        print("trigger row: ", row)
+        print("trigger column: ", column)
+        print("trigger pressed: ", pressed)
         assignation = self.buttonAssignation(row, column)
-        if assignation.isCharacter() :
-            if self.fnMode:
-                self.trigerFnFunction(row, column, pressed)
-            else :
-                if pressed :
-                    #print("pressed ", assignation.keyAssignation.keycode)
-                    self.kbd.press(assignation.keyAssignation.keycode)
-                else:
-                    #print("released ", assignation.keyAssignation.keycode)
-                    self.kbd.release(assignation.keyAssignation.keycode)
+        print("assignation.keyAssignation.selection: ", assignation.keyAssignation.selection)
+        if self.fnMode and not assignation.isFn():
+            print("fn")
+            self.trigerFnFunction(row, column, pressed)
+        elif assignation.isCharacter():
+            print("assignation.isCharacter()")
+            self.triggerCharacter(assignation.keyAssignation.keycode, pressed)
         elif assignation.isMediaKey():
-            if pressed :
-                self.mediaConsumerControl.press(assignation.mediaConsumerControlCode)
-            else:
-                self.mediaConsumerControl.release()
+            print("assignation.isMediaKey()")
+            self.triggerMediaCode(assignation.keyAssignation.mediaConsumerControlCode,pressed)            
         elif assignation.isMouseModeEnabler():
+            print("assignation.isMouseModeEnabler()")
             self.mouseMode = pressed
         elif assignation.isFn():
+            
             self.fnMode = pressed
+            print("assignation.isFn(): ", self.fnMode )
 
 
