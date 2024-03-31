@@ -120,7 +120,7 @@ class NutyMCPPeripheral(NutyPeripheralBase):
                 else :
                     self.columnsPin[columnPin].value  = True
                 columnPin += 1
-            time.sleep(0.001)                
+            time.sleep(0.001)            
                 
             r = 0
             while r < 6:#per row

@@ -22,16 +22,15 @@ deviceLeft = None
 leftSide = nutyPeripheral.NutyPeripheral()
 
 #Connect to left side
-i2cBus = busio.I2C(board.A5, board.A4) 
+i2cBus = busio.I2C(board.A5, board.A4, frequency=400_000) 
 deviceLeft = I2CDevice(i2cBus, 0x33)
 leftSide.rowOffset = 0
 leftSide.columnOffset = 0
 leftSide.buttonsState = buttonsState
-
+yyyyy yyyyyy  
 with deviceLeft as bus_device:
     leftSide.init(bus_device)
 #connect to rightSide MCP
-
 
 rightSideMCP = nutyPeripheral.NutyMCPPeripheral(i2cBus)
 rightSideMCP.rowOffset = 0
@@ -48,4 +47,4 @@ while True :
         with deviceLeft as bus_device :
             leftSide.getStatus(bus_device)
     rightSideMCP.getStatus()
-    time.sleep(0.015)
+    #time.sleep(0.001)

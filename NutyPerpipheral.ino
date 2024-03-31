@@ -94,7 +94,7 @@ void loop() {
           }
         }
         
-        delay(1);
+        delay(5);
         for (int r = 0; r < 6; r++)
         {
 
@@ -103,21 +103,21 @@ void loop() {
             if(nutyPeripheral.buttonsMatrix.button(r,c).pressed!=isPressed){              
               nutyPeripheral.reports.addNew( StatusReport::KeyStroke(r, c, isPressed) );
               nutyPeripheral.buttonsMatrix.button(r,c).pressed=isPressed;
-              if(isPressed){
-                Serial.print("Pressed: ");
-              }else{
-                Serial.print("Released: ");
-              }
-              Serial.print("row ");
-              Serial.print(r);
-              Serial.print(", column ");
-              Serial.println(c);
+              // if(isPressed){
+              //   Serial.print("Pressed: ");
+              // }else{
+              //   Serial.print("Released: ");
+              // }
+              // Serial.print("row ");
+              // Serial.print(r);
+              // Serial.print(", column ");
+              // Serial.println(c);
             }
             
         }
   }
 
-  delay(5);
+  delay(1);
   
   // counter ++;
   // if(counter==3000){

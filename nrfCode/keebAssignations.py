@@ -13,7 +13,7 @@ class KeyAssignation(object):
     MIDI = 5
     LAYER_OR_SETTINGS = 6
     def __init__( self, newVal ):
-        self.keyCode = None
+        self.keycode = None
         if newVal in ( self.NONE, self.CHARACTER, self.MEDIA , self.FN, self.MOUSE_MODE, self.MIDI, self.LAYER_OR_SETTINGS):            
             self.selection= newVal
         else :
