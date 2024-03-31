@@ -5,6 +5,7 @@ import time
 from adafruit_bus_device.i2c_device import I2CDevice
 import nutyPeripheral
 import keebAssignations
+import buttonsState
 from digitalio import DigitalInOut, Direction, Pull
 
 
@@ -14,7 +15,7 @@ led.direction = Direction.OUTPUT
 
 led.value= False
 #print(dir(nutyPeripheral))
-buttonsState = keebAssignations.ButtonsState()
+buttonsState = buttonsState.ButtonsState()
 
 i2cBus = None
 deviceLeft = None

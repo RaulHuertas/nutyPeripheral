@@ -92,18 +92,3 @@ class MouseState :
         self.movingDown = False
         self.movingLeft = False
         self.movingRight = False
-
-class ButtonsState :
-    def __init__(self):
-        self.buttonsAssignations =  [[ButtonRegister() for i in range(8)] for i in range(16)]
-
-    def buttonAssignation(self, row, column):
-         return self.buttonsAssignations[row][column]
-
-    def triggerKey(self, row, column, pressed):
-        print("trigger row: ", row)
-        print("trigger column: ", column)
-        print("trigger pressed: ", pressed)
-        pass
-
-
