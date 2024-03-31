@@ -2,7 +2,7 @@ from adafruit_bus_device.i2c_device import I2CDevice
 from adafruit_mcp230xx.mcp23017 import MCP23017
 import time
 import digitalio
-
+import keebAssignations
 CMD_AREYOUNUTYDEVICE = 1
 CMD_STATUS = 2
  
@@ -14,6 +14,7 @@ class NutyPeripheralBase :
      def __init__(self):
          self.rowOffset = 0;
          self.columnOffset = 0;
+         self.buttonsState = None
          
 class NutyPeripheral(NutyPeripheralBase):
     id = 0
@@ -56,13 +57,18 @@ class NutyPeripheral(NutyPeripheralBase):
                 #print("TYPECODE_NONE RECEIVED")
                 pass
             elif typeCodeReceived == TYPECODE_KEY_STROKE:
-                print("TYPECODE_KEY_STROKE RECEIVED")
+                #print("TYPECODE_KEY_STROKE RECEIVED")
                 row = result[1]
                 column = result[2]
                 pressed = result[3]
-                print("row: ", row)
-                print("column: ", column)
-                print("pressed: ", pressed)
+                #print("row: ", row)
+                #print("column: ", column)
+                #print("pressed: ", pressed)
+                self.buttonsState.triggerKey(
+                    row+self.rowOffset,
+                    column+self.columnOffset,
+                    pressed!=0
+                )
             elif typeCodeReceived == TYPECODE_ROTARY:
                 print("TYPECODE_ROTARY RECEIVED")
             elif typeCodeReceived == TYPECODE_SLIDER_VALUE_CHANGED:
@@ -118,16 +124,17 @@ class NutyMCPPeripheral(NutyPeripheralBase):
                 
             r = 0
             while r < 6:#per row
-                currentlyPressed = self.rowsPin[r].value == False;
-                if currentlyPressed != self.buttonsMatrix[r][c] :
-                    print("Cambio de estado row: ", r)
-                    print("Cambio de estado column: ", c)
+                currentlyPressed = (self.rowsPin[r].value == False);
+                if self.buttonsMatrix[r][c] !=  currentlyPressed:
+                    #print("Cambio de estado row: ", r)
+                    #print("Cambio de estado column: ", c)
                     self.buttonsMatrix[r][c] = currentlyPressed
+                    self.buttonsState.triggerKey(
+                        r+self.rowOffset,
+                        c+self.columnOffset,
+                        currentlyPressed
+                    )
                 r += 1#end of per row
-                
-                
-                
-                
                 
             c+=1 # end of per column
             
