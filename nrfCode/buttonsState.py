@@ -16,13 +16,21 @@ class ButtonsState :
         self.assignFactory()
         self.kbd = Keyboard(usb_hid.devices)
         self.mediaConsumerControl = ConsumerControl(usb_hid.devices)
+        self.shiftPressed = False
+        self.altGrPressed = False
+        self.mouseMode = False
+        self.fnMode = False
 
     def buttonAssignation(self, row, column):
          return self.buttonsAssignations[row][column]
         
-    def assignKeyCode(self, row, column, keycode):
-        self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.CHARACTER)
-        self.buttonAssignation(row,column).keyAssignation.keycode = keycode
+    def assignKeyCode(self, row, column, keycode, fnKeyCode = None):
+        if keycode!=None :
+            self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.CHARACTER)
+            self.buttonAssignation(row,column).keyAssignation.keycode = keycode
+        
+        if fnKeyCode!=None :
+           self.buttonAssignation(row,column).keyFnAssignation.keycode = fnKeyCode
         
     def assignMedia(self, row, column, consumerControlCode):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.MEDIA)
@@ -31,20 +39,29 @@ class ButtonsState :
         
     def assignAsFn(self, row, column):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.FN)
+        
+    def assignAsMouseModeActivator(self, row, column):
+        self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.MOUSE_MODE)
+    def assignAsLayerSettings(self, row, column):
+        self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.LAYER_OR_SETTINGS)        
+        
+            
     
     def assignFactory(self):
         #numbers top row
-        self.assignKeyCode(0, 0, Keycode.ONE)
-        self.assignKeyCode(0, 1, Keycode.TWO)
-        self.assignKeyCode(0, 2, Keycode.THREE)
-        self.assignKeyCode(0, 3, Keycode.FOUR)
-        self.assignKeyCode(0, 4, Keycode.FIVE)        
+        self.assignKeyCode(0, 0, Keycode.ONE, Keycode.F1)
+        self.assignKeyCode(0, 1, Keycode.TWO, Keycode.F2)
+        self.assignKeyCode(0, 2, Keycode.THREE, Keycode.F3)
+        self.assignKeyCode(0, 3, Keycode.FOUR, Keycode.F4)
+        self.assignKeyCode(0, 4, Keycode.FIVE, Keycode.F5)
+        self.assignKeyCode(0, 5, None, Keycode.F11)      
         
-        self.assignKeyCode(0, 7, Keycode.SIX)
-        self.assignKeyCode(0, 8, Keycode.SEVEN)
-        self.assignKeyCode(0, 9, Keycode.EIGHT)
-        self.assignKeyCode(0, 10, Keycode.NINE)
-        self.assignKeyCode(0, 11, Keycode.ZERO)
+        self.assignKeyCode(0, 6, None, Keycode.F12)      
+        self.assignKeyCode(0, 7, Keycode.SIX, Keycode.F6)
+        self.assignKeyCode(0, 8, Keycode.SEVEN, Keycode.F7)
+        self.assignKeyCode(0, 9, Keycode.EIGHT, Keycode.F8)
+        self.assignKeyCode(0, 10, Keycode.NINE, Keycode.F9)
+        self.assignKeyCode(0, 11, Keycode.ZERO, Keycode.F10)
         #characters top row
         self.assignKeyCode(1, 0, Keycode.Q)
         self.assignKeyCode(1, 1, Keycode.W)
@@ -62,7 +79,8 @@ class ButtonsState :
         self.assignKeyCode(2, 1, Keycode.S)
         self.assignKeyCode(2, 2, Keycode.D)
         self.assignKeyCode(2, 3, Keycode.F)
-        self.assignKeyCode(2, 4, Keycode.G)        
+        self.assignKeyCode(2, 4, Keycode.G)
+        self.assignAsMouseModeActivator(2, 5)  
         
         self.assignKeyCode(2, 7, Keycode.H)
         self.assignKeyCode(2, 8, Keycode.J)
@@ -75,7 +93,8 @@ class ButtonsState :
         self.assignKeyCode(3, 1, Keycode.X)
         self.assignKeyCode(3, 2, Keycode.C)
         self.assignKeyCode(3, 3, Keycode.V)
-        self.assignKeyCode(3, 4, Keycode.B)        
+        self.assignKeyCode(3, 4, Keycode.B)
+        self.assignAsLayerSettings(3, 5)   
         
         self.assignKeyCode(3, 7, Keycode.N)
         self.assignKeyCode(3, 8, Keycode.M)
@@ -86,7 +105,7 @@ class ButtonsState :
         #modifiers row
         self.assignKeyCode(4, 0, Keycode.CONTROL)
         self.assignKeyCode(4, 1, Keycode.ALT)
-        self.assignKeyCode(4, 2, Keycode.GUI)
+        self.assignKeyCode(4, 2, Keycode.WINDOWS)
         self.assignKeyCode(4, 3, Keycode.SPACE)
         self.assignKeyCode(4, 4, Keycode.TAB)
         self.assignKeyCode(4, 5, Keycode.BACKSPACE)
@@ -103,35 +122,51 @@ class ButtonsState :
         self.assignMedia(5, 1, ConsumerControlCode.MUTE)
         self.assignMedia(5, 2, ConsumerControlCode.VOLUME_INCREMENT)
         self.assignKeyCode(5, 3, Keycode.SHIFT)
-        #self.assignKeyCode(5, 4, Keycode.TAB)
-        self.assignKeyCode(5, 5, Keycode.FORWARD_SLASH)
+        self.assignAsFn(5, 4)
+        self.assignKeyCode(5, 5, Keycode.MINUS)
         
         self.assignKeyCode(5, 6, Keycode.ESCAPE)
         self.assignKeyCode(5, 7, Keycode.APPLICATION)
-        #self.assignKeyCode(5, 8, Keycode.ENTER)
+        self.assignKeyCode(5, 8, Keycode.GUI)
         self.assignKeyCode(5, 9, Keycode.LEFT_ARROW)
         self.assignKeyCode(5, 10, Keycode.DOWN_ARROW)
         self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW)
         
+    def trigerFnFunction(self, row, column, pressed):
+        assignation = self.buttonAssignation(row, column)
+        if assignation.keyAssignation.selection == KeyAssignation.NONE :
+            return
+        if assignation.keyFnAssignation.keycode == None :
+            return;
         
+        if pressed :
+            self.kbd.press(assignation.keyFnAssignation.keycode)
+        else:
+            self.kbd.release(assignation.keyFnAssignation.keycode)
+            
     def triggerKey(self, row, column, pressed):
         #print("trigger row: ", row)
         #print("trigger column: ", column)
         #print("trigger pressed: ", pressed)
         assignation = self.buttonAssignation(row, column)
         if assignation.isCharacter() :
-            if pressed :
-                #print("pressed ", assignation.keyAssignation.keycode)
-                self.kbd.press(assignation.keyAssignation.keycode)
-            else:
-                #print("released ", assignation.keyAssignation.keycode)
-                self.kbd.release(assignation.keyAssignation.keycode)
+            if self.fnMode:
+                self.trigerFnFunction(row, column, pressed)
+            else :
+                if pressed :
+                    #print("pressed ", assignation.keyAssignation.keycode)
+                    self.kbd.press(assignation.keyAssignation.keycode)
+                else:
+                    #print("released ", assignation.keyAssignation.keycode)
+                    self.kbd.release(assignation.keyAssignation.keycode)
         elif assignation.isMediaKey():
             if pressed :
                 self.mediaConsumerControl.press(assignation.mediaConsumerControlCode)
             else:
                 self.mediaConsumerControl.release()
-    
-
+        elif assignation.isMouseModeEnabler():
+            self.mouseMode = pressed
+        elif assignation.isFn():
+            self.fnMode = pressed
 
 
