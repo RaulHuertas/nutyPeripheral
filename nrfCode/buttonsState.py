@@ -26,6 +26,18 @@ class ButtonsState :
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.FN)
     
     def assignFactory(self):
+        #numbers top row
+        self.assignKeyCode(0, 0, Keycode.ONE)
+        self.assignKeyCode(0, 1, Keycode.TWO)
+        self.assignKeyCode(0, 2, Keycode.THREE)
+        self.assignKeyCode(0, 3, Keycode.FOUR)
+        self.assignKeyCode(0, 4, Keycode.FIVE)        
+        
+        self.assignKeyCode(0, 7, Keycode.SIX)
+        self.assignKeyCode(0, 8, Keycode.SEVEN)
+        self.assignKeyCode(0, 9, Keycode.EIGHT)
+        self.assignKeyCode(0, 10, Keycode.NINE)
+        self.assignKeyCode(0, 11, Keycode.ZERO)
         #characters top row
         self.assignKeyCode(1, 0, Keycode.Q)
         self.assignKeyCode(1, 1, Keycode.W)
@@ -64,10 +76,36 @@ class ButtonsState :
         self.assignKeyCode(3, 10, Keycode.PERIOD)
         self.assignKeyCode(3, 11, Keycode.FORWARD_SLASH)
         
-        #space
+        #modifiers row
+        self.assignKeyCode(4, 0, Keycode.CONTROL)
+        self.assignKeyCode(4, 1, Keycode.ALT)
+        self.assignKeyCode(4, 2, Keycode.GUI)
         self.assignKeyCode(4, 3, Keycode.SPACE)
-        #enter
+        self.assignKeyCode(4, 4, Keycode.TAB)
+        self.assignKeyCode(4, 5, Keycode.BACKSPACE)
+        
+        self.assignKeyCode(4, 6, Keycode.DELETE)
+        self.assignKeyCode(4, 7, Keycode.RIGHT_ALT)
         self.assignKeyCode(4, 8, Keycode.ENTER)
+        self.assignKeyCode(4, 9, Keycode.PRINT_SCREEN)
+        self.assignKeyCode(4, 10, Keycode.UP_ARROW)
+        self.assignKeyCode(4, 11, Keycode.PAUSE)
+        
+        #Modifiers bottom row
+        #self.assignKeyCode(5, 0, Keycode.CONTROL)
+        #self.assignKeyCode(5, 1, Keycode.ALT)
+        #self.assignKeyCode(5, 2, Keycode.GUI)
+        self.assignKeyCode(5, 3, Keycode.SHIFT)
+        #self.assignKeyCode(5, 4, Keycode.TAB)
+        self.assignKeyCode(5, 5, Keycode.FORWARD_SLASH)
+        
+        self.assignKeyCode(5, 6, Keycode.ESCAPE)
+        self.assignKeyCode(5, 7, Keycode.APPLICATION)
+        #self.assignKeyCode(5, 8, Keycode.ENTER)
+        self.assignKeyCode(5, 9, Keycode.LEFT_ARROW)
+        self.assignKeyCode(5, 10, Keycode.DOWN_ARROW)
+        self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW)
+        
         
     def triggerKey(self, row, column, pressed):
         #print("trigger row: ", row)
