@@ -29,15 +29,13 @@ leftSide.columnOffset = 0
 leftSide.buttonsState = buttonsState
 with deviceLeft as bus_device:
     leftSide.init(bus_device)
-#connect to rightSide MCP
 
+#Connect to rightSide MCP
 rightSideMCP = nutyPeripheral.NutyMCPPeripheral(i2cBus)
 rightSideMCP.rowOffset = 0
 rightSideMCP.columnOffset = 6
 rightSideMCP.buttonsState = buttonsState
-#leftSide.init(deviceLeft)
-#print(deviceLeft)
-#deviceLeft = None
+
 #main loop            
 while True :
     #print(deviceLeft)

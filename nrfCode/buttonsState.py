@@ -29,12 +29,6 @@ class ButtonsState :
             self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.CHARACTER)
             self.buttonAssignation(row,column).keyAssignation.keycode = keycode
         
-#         if fnKeyAssignation  in [
-#             KeyAssignation.CHARACTER,
-#             KeyAssignation.MOUSE_CODE,
-#             KeyAssignation.MEDIA,
-#             KeyAssignation.MIDI
-#         ] :
         if fnKeyAssignation==KeyAssignation.CHARACTER :
            self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.CHARACTER)
            self.buttonAssignation(row,column).keyFnAssignation.keycode = fnCode
@@ -82,6 +76,7 @@ class ButtonsState :
         self.assignKeyCode(1, 3, Keycode.R)
         self.assignKeyCode(1, 4, Keycode.T)        
         
+        self.assignKeyCode(1, 6, Keycode.LEFT_BRACKET)
         self.assignKeyCode(1, 7, Keycode.Y)
         self.assignKeyCode(1, 8, Keycode.U)
         self.assignKeyCode(1, 9, Keycode.I)
@@ -95,9 +90,10 @@ class ButtonsState :
         self.assignKeyCode(2, 4, Keycode.G)
         self.assignAsMouseModeActivator(2, 5)  
         
-        self.assignKeyCode(2, 7, Keycode.H)
-        self.assignKeyCode(2, 8, Keycode.J)
-        self.assignKeyCode(2, 9, Keycode.K)
+        self.assignKeyCode(2, 6, Keycode.RIGHT_BRACKET, KeyAssignation.CHARACTER, Keycode.KEYPAD_PLUS )
+        self.assignKeyCode(2, 7, Keycode.H, KeyAssignation.CHARACTER, Keycode.KEYPAD_MINUS )
+        self.assignKeyCode(2, 8, Keycode.J, KeyAssignation.CHARACTER, Keycode.KEYPAD_ASTERISK )
+        self.assignKeyCode(2, 9, Keycode.K, KeyAssignation.CHARACTER, Keycode.KEYPAD_FORWARD_SLASH )
         self.assignKeyCode(2, 10, Keycode.L)
         self.assignKeyCode(2, 11, Keycode.SEMICOLON)
         
@@ -109,9 +105,10 @@ class ButtonsState :
         self.assignKeyCode(3, 4, Keycode.B)
         self.assignAsLayerSettings(3, 5)   
         
+        self.assignKeyCode(3, 6, Keycode.GRAVE_ACCENT)
         self.assignKeyCode(3, 7, Keycode.N)
         self.assignKeyCode(3, 8, Keycode.M)
-        self.assignKeyCode(3, 9, Keycode.COMMA)
+        self.assignKeyCode(3, 9, Keycode.COMMA, KeyAssignation.CHARACTER, Keycode.KEYPAD_ENTER  )
         self.assignKeyCode(3, 10, Keycode.PERIOD)
         self.assignKeyCode(3, 11, Keycode.FORWARD_SLASH)
         
