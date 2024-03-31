@@ -37,11 +37,11 @@ void setup() {
 
 
   Serial.begin(115200);
-  while (!Serial) {
-    ;
-  }
+  //while (!Serial) {
+  //  ;
+  //}
   nutyPeripheral.init(64, 1);
-  Serial.println("run app :)");
+  //Serial.println("run app :)");
   //SETUP COMMUNICTION WITH MASTER
   Wire1.setSDA(26);
   Wire1.setSCL(27);
@@ -64,7 +64,7 @@ void setup() {
 
 
 
-  Serial.println("end setup");
+  //Serial.println("end setup");
 
 
 
