@@ -45,8 +45,8 @@ class ButtonsState :
         if fnKeyAssignation==KeyAssignation.CHARACTER :
            self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.CHARACTER)
            self.buttonAssignation(row,column).keyFnAssignation.keycode = fnCode
-           print("fn function assigned")
-        if fnKeyAssignation==KeyAssignation.MEDIA :
+           #print("fn function assigned")
+        elif fnKeyAssignation==KeyAssignation.MEDIA :
            self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.MEDIA)
            self.buttonAssignation(row,column).keyFnAssignation.mediaConsumerControlCode = fnCode        
         
@@ -55,10 +55,16 @@ class ButtonsState :
         assignation.mouseAction =  MouseAction(mouseActionCode)
         
         
-    def assignMedia(self, row, column, consumerControlCode):
+    def assignMedia(self, row, column, consumerControlCode, fnKeyAssignation = KeyAssignation.NONE, fnCode = None):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.MEDIA)
         self.buttonAssignation(row,column).keyAssignation.mediaConsumerControlCode = consumerControlCode
-        
+        if fnKeyAssignation==KeyAssignation.CHARACTER :
+           self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.CHARACTER)
+           self.buttonAssignation(row,column).keyFnAssignation.keycode = fnCode
+           #print("fn function assigned")
+        elif fnKeyAssignation==KeyAssignation.MEDIA :
+           self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.MEDIA)
+           self.buttonAssignation(row,column).keyFnAssignation.mediaConsumerControlCode = fnCode   
         
         
     def assignAsFn(self, row, column):
@@ -131,9 +137,9 @@ class ButtonsState :
         self.assignKeyCode(3, 11, Keycode.FORWARD_SLASH)
         
         #modifiers row
-        self.assignKeyCode(4, 0, Keycode.CONTROL)
-        self.assignKeyCode(4, 1, Keycode.ALT)
-        self.assignKeyCode(4, 2, Keycode.WINDOWS)
+        self.assignKeyCode(4, 0, Keycode.CONTROL, KeyAssignation.MEDIA, ConsumerControlCode.BRIGHTNESS_DECREMENT)
+        self.assignKeyCode(4, 1, Keycode.ALT, KeyAssignation.MEDIA, ConsumerControlCode.STOP)
+        self.assignKeyCode(4, 2, Keycode.WINDOWS, KeyAssignation.MEDIA, ConsumerControlCode.BRIGHTNESS_INCREMENT)
         self.assignKeyCode(4, 3, Keycode.SPACE)
         self.assignKeyCode(4, 4, Keycode.TAB)
         self.assignAsFn(4, 5)
@@ -146,9 +152,9 @@ class ButtonsState :
         self.assignKeyCode(4, 11, Keycode.PAUSE)
         
         #Modifiers bottom row
-        self.assignMedia(5, 0, ConsumerControlCode.VOLUME_DECREMENT)
-        self.assignMedia(5, 1, ConsumerControlCode.MUTE)
-        self.assignMedia(5, 2, ConsumerControlCode.VOLUME_INCREMENT)
+        self.assignMedia(5, 0, ConsumerControlCode.VOLUME_DECREMENT	, KeyAssignation.MEDIA, ConsumerControlCode.SCAN_PREVIOUS_TRACK)
+        self.assignMedia(5, 1, ConsumerControlCode.MUTE				, KeyAssignation.MEDIA, ConsumerControlCode.PLAY_PAUSE)
+        self.assignMedia(5, 2, ConsumerControlCode.VOLUME_INCREMENT	, KeyAssignation.MEDIA, ConsumerControlCode.SCAN_NEXT_TRACK)
         self.assignKeyCode(5, 3, Keycode.SHIFT)
         self.assignKeyCode(5, 4, Keycode.BACKSPACE)
         self.assignKeyCode(5, 5, Keycode.MINUS)
@@ -176,7 +182,7 @@ class ButtonsState :
         assignation = self.buttonAssignation(row, column)               
         if assignation.keyFnAssignation.selection == KeyAssignation.CHARACTER :
             self.triggerCharacter(assignation.keyFnAssignation.keycode, pressed);
-        if assignation.keyFnAssignation.selection == KeyAssignation.MEDIA :
+        elif assignation.keyFnAssignation.selection == KeyAssignation.MEDIA :
             self.triggerMediaCode(assignation.keyFnAssignation.mediaConsumerControlCode, pressed);
     
     def triggerMouseFunction(self, row, column, pressed):
@@ -244,7 +250,7 @@ class ButtonsState :
         if self.fnMode and not assignation.isFn():
             #print("fn enabler")
             self.triggerFnFunction(row, column, pressed)
-        if self.mouseState.enabled and not assignation.isMouseModeEnabler():
+        elif self.mouseState.enabled and not assignation.isMouseModeEnabler():
             #print("mouse enabler")
             self.triggerMouseFunction(row, column, pressed)        
         elif assignation.isCharacter():
