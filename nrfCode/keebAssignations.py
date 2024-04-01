@@ -4,25 +4,6 @@ from adafruit_hid.keycode import Keycode
 from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode
 
-class KeyAssignation(object):
-    NONE = 0
-    CHARACTER = 1
-    MEDIA = 2
-    FN = 3
-    MOUSE_MODE = 4
-    MOUSE_CODE = 5
-    MIDI = 6
-    LAYER_OR_SETTINGS = 7
-    def __init__( self, newVal ):
-        self.keycode = None
-        self.mediaConsumerControlCode = None
-        self.midiCode = None
-        self.mouseCode = None
-        if newVal in ( self.NONE, self.CHARACTER, self.MEDIA , self.FN, self.MOUSE_MODE, self.MIDI, self.LAYER_OR_SETTINGS):            
-            self.selection= newVal
-        else :
-            self.selection= self.NONE
-            
 class MouseAction (object):
     NONE = 0
     UP = 1
@@ -51,7 +32,29 @@ class MouseAction (object):
             self.selection= newVal
         else :
             self.selection= self.NONE
+
+
+
+class KeyAssignation(object):
+    NONE = 0
+    CHARACTER = 1
+    MEDIA = 2
+    FN = 3
+    MOUSE_MODE = 4
+    MOUSE_CODE = 5
+    MIDI = 6
+    LAYER_OR_SETTINGS = 7
+    def __init__( self, newVal ):
+        self.keycode = None
+        self.mediaConsumerControlCode = None
+        self.midiCode = None
+        self.mouseCode = None
+        if newVal in ( self.NONE, self.CHARACTER, self.MEDIA , self.FN, self.MOUSE_MODE, self.MIDI, self.LAYER_OR_SETTINGS):            
+            self.selection= newVal
+        else :
+            self.selection= self.NONE
             
+
 class ButtonRegister :
     def __init__(self):
         self.lastTimePressed = 0;

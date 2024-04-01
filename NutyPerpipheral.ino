@@ -21,7 +21,7 @@ void I2C_ReceiveHandler(int numBytesReceived) {
   while (Wire1.available() > 0) {
     byte newReadByte = Wire1.read();
     if(rxCounter>=RXMAXLEN){
-       Serial.println("i2c ignoring TOO MUCH DATA");
+       //Serial.println("i2c ignoring TOO MUCH DATA");
       continue;
     }
     rxData[rxCounter] = newReadByte;
@@ -36,10 +36,12 @@ void I2C_ReceiveHandler(int numBytesReceived) {
 void setup() {
 
 
-  Serial.begin(115200);
+  //Serial.begin(115200);
   //while (!Serial) {
   //  ;
   //}
+  pinMode(LED_BUILTIN, OUTPUT);
+
   nutyPeripheral.init(64, 1);
   //Serial.println("run app :)");
   //SETUP COMMUNICTION WITH MASTER
@@ -70,10 +72,17 @@ void setup() {
 
 }
 
-//int counter = 0;
-void loop() {
-  
+const int maxCounter = 50;
 
+int counter = 0;
+void loop() {
+  counter++;
+  if(counter<maxCounter/2){
+     digitalWrite(LED_BUILTIN, HIGH);
+  }else{
+     digitalWrite(LED_BUILTIN, LOW);
+  }
+  counter%=maxCounter;
   //SEND RESPONSE
   if( nutyPeripheral.responseLen >0 ){
       for(int r = 0; r<nutyPeripheral.responseLen; r++){

@@ -5,10 +5,20 @@ from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode
 from keebAssignations import ButtonRegister
 from keebAssignations import KeyAssignation
+from keebAssignations import MouseAction
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
+from adafruit_hid.mouse import Mouse
 
+class MouseState :
+    def __init__(self):
+        self.movingUp = False
+        self.movingDown = False
+        self.movingLeft = False
+        self.movingRight = False
+        self.enabled = False
+        self.detailMoveEnabled = False
 
 class ButtonsState :
     def __init__(self):
@@ -16,10 +26,13 @@ class ButtonsState :
         self.assignFactory()
         self.kbd = Keyboard(usb_hid.devices)
         self.mediaConsumerControl = ConsumerControl(usb_hid.devices)
+        self.mouse = Mouse(usb_hid.devices)
         self.shiftPressed = False
-        self.altGrPressed = False
-        self.mouseMode = False
+        self.altGrPressed = False        
+        self.mouseState = MouseState();
         self.fnMode = False
+        
+
 
     def buttonAssignation(self, row, column):
          return self.buttonsAssignations[row][column]
@@ -37,6 +50,9 @@ class ButtonsState :
            self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.MEDIA)
            self.buttonAssignation(row,column).keyFnAssignation.mediaConsumerControlCode = fnCode        
         
+    def assignMouseModeFunction(self, row, column, mouseActionCode = MouseAction.NONE):
+        assignation = self.buttonAssignation(row, column)
+        assignation.mouseAction =  MouseAction(mouseActionCode)
         
         
     def assignMedia(self, row, column, consumerControlCode):
@@ -44,11 +60,13 @@ class ButtonsState :
         self.buttonAssignation(row,column).keyAssignation.mediaConsumerControlCode = consumerControlCode
         
         
+        
     def assignAsFn(self, row, column):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.FN)
         
     def assignAsMouseModeActivator(self, row, column):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.MOUSE_MODE)
+        
     def assignAsLayerSettings(self, row, column):
         self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.LAYER_OR_SETTINGS)        
         
@@ -77,24 +95,24 @@ class ButtonsState :
         self.assignKeyCode(1, 4, Keycode.T)        
         
         self.assignKeyCode(1, 6, Keycode.LEFT_BRACKET)
-        self.assignKeyCode(1, 7, Keycode.Y)
-        self.assignKeyCode(1, 8, Keycode.U)
-        self.assignKeyCode(1, 9, Keycode.I)
-        self.assignKeyCode(1, 10, Keycode.O)
+        self.assignKeyCode(1, 7, Keycode.Y);self.assignMouseModeFunction(1, 7, MouseAction.SCROLL_UP); 
+        self.assignKeyCode(1, 8, Keycode.U); self.assignMouseModeFunction(1, 8, MouseAction.LEFT_CLICK)
+        self.assignKeyCode(1, 9, Keycode.I); self.assignMouseModeFunction(1, 9, MouseAction.UP)
+        self.assignKeyCode(1, 10, Keycode.O); self.assignMouseModeFunction(1, 10, MouseAction.RIGHT_CLICK)
         self.assignKeyCode(1, 11, Keycode.P)
         #characters home row
         self.assignKeyCode(2, 0, Keycode.A)
         self.assignKeyCode(2, 1, Keycode.S)
         self.assignKeyCode(2, 2, Keycode.D)
         self.assignKeyCode(2, 3, Keycode.F)
-        self.assignKeyCode(2, 4, Keycode.G)
+        self.assignKeyCode(2, 4, Keycode.G); self.assignMouseModeFunction(2, 4, MouseAction.DETAIL_MOVEMENT)
         self.assignAsMouseModeActivator(2, 5)  
         
         self.assignKeyCode(2, 6, Keycode.RIGHT_BRACKET, KeyAssignation.CHARACTER, Keycode.KEYPAD_PLUS )
-        self.assignKeyCode(2, 7, Keycode.H, KeyAssignation.CHARACTER, Keycode.KEYPAD_MINUS )
-        self.assignKeyCode(2, 8, Keycode.J, KeyAssignation.CHARACTER, Keycode.KEYPAD_ASTERISK )
-        self.assignKeyCode(2, 9, Keycode.K, KeyAssignation.CHARACTER, Keycode.KEYPAD_FORWARD_SLASH )
-        self.assignKeyCode(2, 10, Keycode.L)
+        self.assignKeyCode(2, 7, Keycode.H, KeyAssignation.CHARACTER, Keycode.KEYPAD_MINUS ); self.assignMouseModeFunction(2, 7, MouseAction.SCROLL_DOWN)
+        self.assignKeyCode(2, 8, Keycode.J, KeyAssignation.CHARACTER, Keycode.KEYPAD_ASTERISK ); self.assignMouseModeFunction(2, 8, MouseAction.LEFT)
+        self.assignKeyCode(2, 9, Keycode.K, KeyAssignation.CHARACTER, Keycode.KEYPAD_FORWARD_SLASH ); self.assignMouseModeFunction(2, 9, MouseAction.DOWN)
+        self.assignKeyCode(2, 10, Keycode.L); self.assignMouseModeFunction(2, 10, MouseAction.RIGHT)
         self.assignKeyCode(2, 11, Keycode.SEMICOLON)
         
         #characters bottom row
@@ -106,7 +124,7 @@ class ButtonsState :
         self.assignAsLayerSettings(3, 5)   
         
         self.assignKeyCode(3, 6, Keycode.GRAVE_ACCENT)
-        self.assignKeyCode(3, 7, Keycode.N)
+        self.assignKeyCode(3, 7, Keycode.N);self.assignMouseModeFunction(3, 7, MouseAction.SCROLL_CLICK)
         self.assignKeyCode(3, 8, Keycode.M)
         self.assignKeyCode(3, 9, Keycode.COMMA, KeyAssignation.CHARACTER, Keycode.KEYPAD_ENTER  )
         self.assignKeyCode(3, 10, Keycode.PERIOD)
@@ -118,7 +136,7 @@ class ButtonsState :
         self.assignKeyCode(4, 2, Keycode.WINDOWS)
         self.assignKeyCode(4, 3, Keycode.SPACE)
         self.assignKeyCode(4, 4, Keycode.TAB)
-        self.assignKeyCode(4, 5, Keycode.BACKSPACE)
+        self.assignAsFn(4, 5)
         
         self.assignKeyCode(4, 6, Keycode.DELETE)
         self.assignKeyCode(4, 7, Keycode.RIGHT_ALT)
@@ -132,7 +150,7 @@ class ButtonsState :
         self.assignMedia(5, 1, ConsumerControlCode.MUTE)
         self.assignMedia(5, 2, ConsumerControlCode.VOLUME_INCREMENT)
         self.assignKeyCode(5, 3, Keycode.SHIFT)
-        self.assignAsFn(5, 4)
+        self.assignKeyCode(5, 4, Keycode.BACKSPACE)
         self.assignKeyCode(5, 5, Keycode.MINUS)
         
         self.assignKeyCode(5, 6, Keycode.ESCAPE)
@@ -143,7 +161,7 @@ class ButtonsState :
         self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW)
         
     def triggerCharacter(self, keycode, pressed):
-        print("triggerCharacter")
+        #print("triggerCharacter")
         if pressed :
             self.kbd.press(keycode)
         else:            
@@ -154,35 +172,92 @@ class ButtonsState :
             self.mediaConsumerControl.press(ccCode)
         else:
             self.mediaConsumerControl.release()
-    def trigerFnFunction(self, row, column, pressed):
-        assignation = self.buttonAssignation(row, column)       
-        
+    def triggerFnFunction(self, row, column, pressed):
+        assignation = self.buttonAssignation(row, column)               
         if assignation.keyFnAssignation.selection == KeyAssignation.CHARACTER :
             self.triggerCharacter(assignation.keyFnAssignation.keycode, pressed);
         if assignation.keyFnAssignation.selection == KeyAssignation.MEDIA :
             self.triggerMediaCode(assignation.keyFnAssignation.mediaConsumerControlCode, pressed);
-            
-    def triggerKey(self, row, column, pressed):
-        print("trigger row: ", row)
-        print("trigger column: ", column)
-        print("trigger pressed: ", pressed)
+    
+    def triggerMouseFunction(self, row, column, pressed):
         assignation = self.buttonAssignation(row, column)
-        print("assignation.keyAssignation.selection: ", assignation.keyAssignation.selection)
+        if assignation.mouseAction.selection == MouseAction.NONE :
+            return
+        elif assignation.mouseAction.selection == MouseAction.LEFT_CLICK :
+            if pressed :
+                self.mouse.press(Mouse.LEFT_BUTTON)
+            else:
+                self.mouse.release(Mouse.LEFT_BUTTON)
+        elif assignation.mouseAction.selection == MouseAction.RIGHT_CLICK :
+            if pressed :
+                self.mouse.press(Mouse.RIGHT_BUTTON)
+            else:
+                self.mouse.release(Mouse.RIGHT_BUTTON)
+        elif assignation.mouseAction.selection == MouseAction.SCROLL_CLICK :
+            if pressed :
+                self.mouse.press(Mouse.MIDDLE_BUTTON )
+            else:
+                self.mouse.release(Mouse.MIDDLE_BUTTON )
+        elif assignation.mouseAction.selection == MouseAction.SCROLL_UP :
+            if pressed :
+                self.mouse.move(wheel = 1 )
+        elif assignation.mouseAction.selection == MouseAction.SCROLL_DOWN :
+            if pressed :
+                self.mouse.move(wheel = -1 )
+        elif assignation.mouseAction.selection == MouseAction.DETAIL_MOVEMENT :
+                self.mouseState.detailMoveEnabled = pressed
+        elif assignation.mouseAction.selection == MouseAction.UP :
+                self.mouseState.movingUp = pressed
+        elif assignation.mouseAction.selection == MouseAction.DOWN :
+                self.mouseState.movingDown = pressed
+        elif assignation.mouseAction.selection == MouseAction.LEFT :
+                self.mouseState.movingLeft = pressed
+        elif assignation.mouseAction.selection == MouseAction.RIGHT :
+                self.mouseState.movingRight = pressed
+               
+    def evaluateStatus(self):
+        #check mouse status
+        if self.mouseState.enabled:
+            normalMove = 10
+            detailMove = 1
+            dx = 0
+            dy = 0
+            if self.mouseState.movingLeft :
+                dx -= (detailMove if self.mouseState.detailMoveEnabled else normalMove)
+            if self.mouseState.movingRight :
+                dx += (detailMove if self.mouseState.detailMoveEnabled else normalMove)
+            if self.mouseState.movingUp :
+                dy -= (detailMove if self.mouseState.detailMoveEnabled else normalMove)
+            if self.mouseState.movingDown :
+                dy += (detailMove if self.mouseState.detailMoveEnabled else normalMove)
+            
+            if (dx!=0) or (dy!=0) :
+                self.mouse.move(x=dx, y=dy )
+        pass
+    
+    def triggerKey(self, row, column, pressed):
+        #print("trigger row: ", row)
+        #print("trigger column: ", column)
+        #print("trigger pressed: ", pressed)
+        assignation = self.buttonAssignation(row, column)
+        #print("assignation.keyAssignation.selection: ", assignation.keyAssignation.selection)
         if self.fnMode and not assignation.isFn():
-            print("fn")
-            self.trigerFnFunction(row, column, pressed)
+            #print("fn enabler")
+            self.triggerFnFunction(row, column, pressed)
+        if self.mouseState.enabled and not assignation.isMouseModeEnabler():
+            #print("mouse enabler")
+            self.triggerMouseFunction(row, column, pressed)        
         elif assignation.isCharacter():
-            print("assignation.isCharacter()")
+            #print("assignation.isCharacter()")
             self.triggerCharacter(assignation.keyAssignation.keycode, pressed)
         elif assignation.isMediaKey():
-            print("assignation.isMediaKey()")
+            #print("assignation.isMediaKey()")
             self.triggerMediaCode(assignation.keyAssignation.mediaConsumerControlCode,pressed)            
         elif assignation.isMouseModeEnabler():
-            print("assignation.isMouseModeEnabler()")
-            self.mouseMode = pressed
-        elif assignation.isFn():
-            
+            #print("assignation.isMouseModeEnabler()")
+            self.mouseState.enabled = pressed
+        elif assignation.isFn():            
             self.fnMode = pressed
-            print("assignation.isFn(): ", self.fnMode )
+            #print("assignation.isFn(): ", self.fnMode )
 
 

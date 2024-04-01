@@ -33,13 +33,14 @@ class NutyPeripheral(NutyPeripheralBase):
             bus_device.readinto(result)
             id = result[3]
             nKeys = result[4]
-            print("id read: ", id)
-            print("nKeys read", nKeys)
+            #print("id read: ", id)
+            #print("nKeys read", nKeys)
             ret = True
         except:
-            print("error reading i2c")
+            #print("error reading i2c")
+            pass
             
-        print(result)
+        #print(result)
         return ret
 
     def getStatus(self, bus_device):
@@ -122,7 +123,7 @@ class NutyMCPPeripheral(NutyPeripheralBase):
                 else :
                     self.columnsPin[columnPin].value  = True
                 columnPin += 1
-            time.sleep(0.001)            
+            #time.sleep(0.001)            
                 
             r = 0
             while r < 6:#per row

@@ -44,4 +44,5 @@ while True :
         with deviceLeft as bus_device :
             leftSide.getStatus(bus_device)
     rightSideMCP.getStatus()
+    buttonsState.evaluateStatus()
     time.sleep(0.001)
