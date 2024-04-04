@@ -192,9 +192,9 @@ class ButtonsState :
         self.assignKeyCode(4, 6, Keycode.DELETE)
         self.assignKeyCode(4, 7, Keycode.BACKSPACE)
         self.assignKeyCode(4, 8, Keycode.ENTER)
-        self.assignKeyCode(4, 9, Keycode.PRINT_SCREEN)
-        self.assignKeyCode(4, 10, Keycode.UP_ARROW)
-        self.assignKeyCode(4, 11, Keycode.PAUSE)
+        self.assignKeyCode(4, 9, Keycode.PRINT_SCREEN, KeyAssignation.CHARACTER, Keycode.INSERT )
+        self.assignKeyCode(4, 10, Keycode.UP_ARROW, KeyAssignation.CHARACTER, Keycode.HOME )
+        self.assignKeyCode(4, 11, Keycode.PAUSE, KeyAssignation.CHARACTER, Keycode.PAGE_UP )
         
         #Modifiers bottom row
         self.assignMedia(5, 0, ConsumerControlCode.VOLUME_DECREMENT	, KeyAssignation.MEDIA, ConsumerControlCode.SCAN_PREVIOUS_TRACK)
@@ -207,9 +207,9 @@ class ButtonsState :
         self.assignKeyCode(5, 6, Keycode.ESCAPE)
         self.assignAsLayerSettings(5, 7)           
         self.assignKeyCode(5, 8, Keycode.TAB)
-        self.assignKeyCode(5, 9, Keycode.LEFT_ARROW)
-        self.assignKeyCode(5, 10, Keycode.DOWN_ARROW)
-        self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW)
+        self.assignKeyCode(5, 9, Keycode.LEFT_ARROW, KeyAssignation.CHARACTER, Keycode.DELETE)
+        self.assignKeyCode(5, 10, Keycode.DOWN_ARROW, KeyAssignation.CHARACTER, Keycode.END)
+        self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW, KeyAssignation.CHARACTER, Keycode.PAGE_DOWN)
         
     def triggerCharacter(self, keycode, pressed):
         print("triggerCharacter")

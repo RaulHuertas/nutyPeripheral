@@ -19,7 +19,7 @@ i2cBus = None
 deviceLeft = None
 leftSide = nutyPeripheral.NutyPeripheral()
 #Connect to left sid5e
-i2cBus = busio.I2C(board.A5, board.A4, frequency=1_200_000) 
+i2cBus = busio.I2C(board.A5, board.A4, frequency=800_000) 
 deviceLeft = I2CDevice(i2cBus, 0x33)
 leftSide.rowOffset = 0
 leftSide.columnOffset = 0
