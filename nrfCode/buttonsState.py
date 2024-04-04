@@ -9,8 +9,14 @@ from keebAssignations import MouseAction
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
+from snKeycodes import ESKeycodes
 from adafruit_hid.mouse import Mouse
+from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
 
+def dump(obj):
+  for attr in dir(obj):
+    print("obj.%s = %r" % (attr, getattr(obj, attr)))
+    
 class MouseState :
     def __init__(self):
         self.movingUp = False
@@ -25,6 +31,8 @@ class ButtonsState :
         self.buttonsAssignations =  [[ButtonRegister() for i in range(16)] for i in range(16)]
         self.assignFactory()
         self.kbd = Keyboard(usb_hid.devices)
+        self.kbd.release_all()
+        self.keyboard_layout = KeyboardLayoutUS(self.kbd)
         self.mediaConsumerControl = ConsumerControl(usb_hid.devices)
         self.mouse = Mouse(usb_hid.devices)
         self.shiftPressed = False
@@ -49,6 +57,39 @@ class ButtonsState :
         elif fnKeyAssignation==KeyAssignation.MEDIA :
            self.buttonAssignation(row,column).keyFnAssignation = KeyAssignation(KeyAssignation.MEDIA)
            self.buttonAssignation(row,column).keyFnAssignation.mediaConsumerControlCode = fnCode        
+        
+    def assignSCS(self, row, column, *numbers):
+        self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.SPECIAL_CHARACTER_SEQUENCE)
+        keycodeSeq = (Keycode.ALT,)
+        for number in numbers:            
+            if number == 0:
+                keycodeSeq = keycodeSeq+(Keycode.KEYPAD_ZERO,)
+            else:
+                keycodeSeq = keycodeSeq+(Keycode.KEYPAD_ENTER +number ,)
+        self.buttonAssignation(row,column).keyAssignation.keycode = keycodeSeq
+        print(keycodeSeq)
+        
+    def assignSCSOnShift(self, row, column, *numbers):
+        #self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.SPECIAL_CHARACTER_SEQUENCE)
+        keycodeSeq = (Keycode.ALT,)
+        for number in numbers:            
+            if number == 0:
+                keycodeSeq = keycodeSeq+(Keycode.KEYPAD_ZERO,)
+            else:
+                keycodeSeq = keycodeSeq+(Keycode.KEYPAD_ENTER +number ,)
+        self.buttonAssignation(row,column).keyAssignation.shiftKeycode = keycodeSeq
+        print(keycodeSeq)
+        
+    def assignSCSOnAltGr(self, row, column, *numbers):
+        #self.buttonAssignation(row,column).keyAssignation = KeyAssignation(KeyAssignation.SPECIAL_CHARACTER_SEQUENCE)
+        keycodeSeq = (Keycode.ALT,)
+        for number in numbers:            
+            if number == 0:
+                keycodeSeq = keycodeSeq+(Keycode.KEYPAD_ZERO,)
+            else:
+                keycodeSeq = keycodeSeq+(Keycode.KEYPAD_ENTER +number ,)
+        self.buttonAssignation(row,column).keyAssignation.altGrKeycode = keycodeSeq
+        print(keycodeSeq)      
         
     def assignMouseModeFunction(self, row, column, mouseActionCode = MouseAction.NONE):
         assignation = self.buttonAssignation(row, column)
@@ -80,14 +121,14 @@ class ButtonsState :
     
     def assignFactory(self):
         #numbers top row
-        self.assignKeyCode(0, 0, Keycode.ONE, KeyAssignation.CHARACTER, Keycode.F1)
+        self.assignKeyCode(0, 0, Keycode.ONE , KeyAssignation.CHARACTER, Keycode.F1)
         self.assignKeyCode(0, 1, Keycode.TWO, KeyAssignation.CHARACTER, Keycode.F2)
         self.assignKeyCode(0, 2, Keycode.THREE, KeyAssignation.CHARACTER, Keycode.F3)
         self.assignKeyCode(0, 3, Keycode.FOUR, KeyAssignation.CHARACTER, Keycode.F4)
         self.assignKeyCode(0, 4, Keycode.FIVE, KeyAssignation.CHARACTER, Keycode.F5)
-        self.assignKeyCode(0, 5, None, KeyAssignation.CHARACTER, Keycode.F11)      
+        self.assignKeyCode(0, 5, ESKeycodes.OPENING_QUESTION_MARK, KeyAssignation.CHARACTER, Keycode.F11)
         
-        self.assignKeyCode(0, 6, None, KeyAssignation.CHARACTER, Keycode.F12)      
+        self.assignKeyCode(0, 6, ESKeycodes.QUOTE, KeyAssignation.CHARACTER, Keycode.F12)
         self.assignKeyCode(0, 7, Keycode.SIX, KeyAssignation.CHARACTER, Keycode.F6)
         self.assignKeyCode(0, 8, Keycode.SEVEN, KeyAssignation.CHARACTER, Keycode.F7)
         self.assignKeyCode(0, 9, Keycode.EIGHT, KeyAssignation.CHARACTER, Keycode.F8)
@@ -100,7 +141,7 @@ class ButtonsState :
         self.assignKeyCode(1, 3, Keycode.R)
         self.assignKeyCode(1, 4, Keycode.T)        
         
-        self.assignKeyCode(1, 6, Keycode.LEFT_BRACKET)
+        self.assignSCS(1, 6,  1, 7, 9);self.assignSCSOnShift(1, 6,  1, 6,7) ;self.assignSCSOnAltGr(1, 6,  1, 7,0);  
         self.assignKeyCode(1, 7, Keycode.Y);self.assignMouseModeFunction(1, 7, MouseAction.SCROLL_UP); 
         self.assignKeyCode(1, 8, Keycode.U); self.assignMouseModeFunction(1, 8, MouseAction.LEFT_CLICK)
         self.assignKeyCode(1, 9, Keycode.I); self.assignMouseModeFunction(1, 9, MouseAction.UP)
@@ -114,12 +155,12 @@ class ButtonsState :
         self.assignKeyCode(2, 4, Keycode.G); self.assignMouseModeFunction(2, 4, MouseAction.DETAIL_MOVEMENT)
         self.assignAsMouseModeActivator(2, 5)  
         
-        self.assignKeyCode(2, 6, Keycode.RIGHT_BRACKET, KeyAssignation.CHARACTER, Keycode.KEYPAD_PLUS )
+        self.assignKeyCode(2, 6, Keycode.GUI, KeyAssignation.CHARACTER, Keycode.KEYPAD_PLUS )
         self.assignKeyCode(2, 7, Keycode.H, KeyAssignation.CHARACTER, Keycode.KEYPAD_MINUS ); self.assignMouseModeFunction(2, 7, MouseAction.SCROLL_DOWN)
         self.assignKeyCode(2, 8, Keycode.J, KeyAssignation.CHARACTER, Keycode.KEYPAD_ASTERISK ); self.assignMouseModeFunction(2, 8, MouseAction.LEFT)
         self.assignKeyCode(2, 9, Keycode.K, KeyAssignation.CHARACTER, Keycode.KEYPAD_FORWARD_SLASH ); self.assignMouseModeFunction(2, 9, MouseAction.DOWN)
         self.assignKeyCode(2, 10, Keycode.L); self.assignMouseModeFunction(2, 10, MouseAction.RIGHT)
-        self.assignKeyCode(2, 11, Keycode.SEMICOLON)
+        self.assignKeyCode(2, 11, ESKeycodes.NTIL)
         
         #characters bottom row
         self.assignKeyCode(3, 0, Keycode.Z)
@@ -127,9 +168,11 @@ class ButtonsState :
         self.assignKeyCode(3, 2, Keycode.C)
         self.assignKeyCode(3, 3, Keycode.V)
         self.assignKeyCode(3, 4, Keycode.B)
-        self.assignAsLayerSettings(3, 5)   
+        self.assignAsFn(3, 5)
         
-        self.assignKeyCode(3, 6, Keycode.GRAVE_ACCENT)
+        
+        #self.assignSCS(3, 6,  6,0);self.assignSCSOnShift(3, 6,  6,2) ;
+        self.assignKeyCode(3, 6, ESKeycodes.LESSER_GREATER);self.assignMouseModeFunction(3, 7, MouseAction.SCROLL_CLICK)
         self.assignKeyCode(3, 7, Keycode.N);self.assignMouseModeFunction(3, 7, MouseAction.SCROLL_CLICK)
         self.assignKeyCode(3, 8, Keycode.M)
         self.assignKeyCode(3, 9, Keycode.COMMA, KeyAssignation.CHARACTER, Keycode.KEYPAD_ENTER  )
@@ -138,14 +181,16 @@ class ButtonsState :
         
         #modifiers row
         self.assignKeyCode(4, 0, Keycode.CONTROL, KeyAssignation.MEDIA, ConsumerControlCode.BRIGHTNESS_DECREMENT)
-        self.assignKeyCode(4, 1, Keycode.ALT, KeyAssignation.MEDIA, ConsumerControlCode.STOP)
-        self.assignKeyCode(4, 2, Keycode.WINDOWS, KeyAssignation.MEDIA, ConsumerControlCode.BRIGHTNESS_INCREMENT)
+        self.assignKeyCode(4, 1, Keycode.SHIFT, KeyAssignation.MEDIA, ConsumerControlCode.STOP)
+        self.assignKeyCode(4, 2, Keycode.ALT, KeyAssignation.MEDIA, ConsumerControlCode.BRIGHTNESS_INCREMENT)
         self.assignKeyCode(4, 3, Keycode.SPACE)
-        self.assignKeyCode(4, 4, Keycode.TAB)
-        self.assignAsFn(4, 5)
+        self.assignKeyCode(4, 4, ESKeycodes.OPENING_BRAQUETS)
+        self.assignKeyCode(4, 5, ESKeycodes.CLOSING_BRAQUETS)
+        #self.assignSCS(4, 4,  1,2,3);self.assignSCSOnShift(4, 4,  9,1) ;self.assignSCSOnAltGr(4, 4,  2,1,9);
+        #self.assignSCS(4,5,  2,2,1);self.assignSCSOnShift(4, 5,  2,2,1) ;self.assignSCSOnAltGr(4, 5,  2,2,1);
         
         self.assignKeyCode(4, 6, Keycode.DELETE)
-        self.assignKeyCode(4, 7, Keycode.RIGHT_ALT)
+        self.assignKeyCode(4, 7, Keycode.BACKSPACE)
         self.assignKeyCode(4, 8, Keycode.ENTER)
         self.assignKeyCode(4, 9, Keycode.PRINT_SCREEN)
         self.assignKeyCode(4, 10, Keycode.UP_ARROW)
@@ -155,29 +200,73 @@ class ButtonsState :
         self.assignMedia(5, 0, ConsumerControlCode.VOLUME_DECREMENT	, KeyAssignation.MEDIA, ConsumerControlCode.SCAN_PREVIOUS_TRACK)
         self.assignMedia(5, 1, ConsumerControlCode.MUTE				, KeyAssignation.MEDIA, ConsumerControlCode.PLAY_PAUSE)
         self.assignMedia(5, 2, ConsumerControlCode.VOLUME_INCREMENT	, KeyAssignation.MEDIA, ConsumerControlCode.SCAN_NEXT_TRACK)
-        self.assignKeyCode(5, 3, Keycode.SHIFT)
-        self.assignKeyCode(5, 4, Keycode.BACKSPACE)
-        self.assignKeyCode(5, 5, Keycode.MINUS)
+        self.assignKeyCode(5, 3, Keycode.RIGHT_ALT)
+        self.assignKeyCode(5, 4, ESKeycodes.TILDE_DIERESIS )
+        self.assignKeyCode(5, 5, ESKeycodes.PLUS)
         
         self.assignKeyCode(5, 6, Keycode.ESCAPE)
-        self.assignKeyCode(5, 7, Keycode.APPLICATION)
-        self.assignKeyCode(5, 8, Keycode.GUI)
+        self.assignAsLayerSettings(5, 7)           
+        self.assignKeyCode(5, 8, Keycode.TAB)
         self.assignKeyCode(5, 9, Keycode.LEFT_ARROW)
         self.assignKeyCode(5, 10, Keycode.DOWN_ARROW)
         self.assignKeyCode(5, 11, Keycode.RIGHT_ARROW)
         
     def triggerCharacter(self, keycode, pressed):
-        #print("triggerCharacter")
+        print("triggerCharacter")
+        #sequ = (Keycode.ALT, Keycode.KEYPAD_ONE, Keycode.KEYPAD_SIX, Keycode.KEYPAD_EIGHT)
+        #self.kbd.send(*sequ)
+        #self.kbd.release(Keycode.RIGHT_ALT, Keycode.KEYPAD_ONE, Keycode.KEYPAD_SIX, Keycode.KEYPAD_EIGHT)
+        #return
         if pressed :
             self.kbd.press(keycode)
         else:            
             self.kbd.release(keycode)
-            
+
+
+    def triggerSCS(self, pressed, keyAssignation):
+        #print("triggerSCS keyAssignation", dir(keyAssignation))
+        #dump(keyAssignation)
+        if keyAssignation.keycode!= None:
+            print("triggerSCS keycode", *keyAssignation.keycode)
+        if keyAssignation.shiftKeycode!= None:
+            print("triggerSCS shiftKeycode", *keyAssignation.shiftKeycode)
+        if keyAssignation.altGrKeycode!= None:
+            print("triggerSCS altGrKeycode", *keyAssignation.altGrKeycode)
+        #sequ = (Keycode.ALT, Keycode.KEYPAD_ONE, Keycode.KEYPAD_SIX, Keycode.KEYPAD_EIGHT)
+        
+        #self.kbd.release(Keycode.RIGHT_ALT, Keycode.KEYPAD_ONE, Keycode.KEYPAD_SIX, Keycode.KEYPAD_EIGHT)
+        #return
+        if pressed :
+            if self.shiftPressed :
+                if keyAssignation.shiftKeycode!=None:
+                    print("a")
+                    self.kbd.release(Keycode.SHIFT)
+                    self.kbd.send(0xff)
+                    self.kbd.send(*keyAssignation.shiftKeycode )
+                    self.kbd.press(Keycode.SHIFT)
+                    
+            elif self.altGrPressed :
+                if keyAssignation.altGrKeycode!=None:
+                    print("b")
+                    #self.kbd.release_all()
+                    self.kbd.release(Keycode.RIGHT_ALT)
+                    self.kbd.send(0xff)
+                    self.kbd.send(*keyAssignation.altGrKeycode)
+                    self.kbd.press(Keycode.RIGHT_ALT)
+                    #self.kbd.release_all()
+            else :
+                if keyAssignation.keycode!=None:
+                    print("c")
+                    #self.kbd.release_all()
+                    self.kbd.send(0xff)
+                    self.kbd.send(*keyAssignation.keycode)
+
     def triggerMediaCode(self, ccCode, pressed):
         if pressed :
             self.mediaConsumerControl.press(ccCode)
         else:
             self.mediaConsumerControl.release()
+            
     def triggerFnFunction(self, row, column, pressed):
         assignation = self.buttonAssignation(row, column)               
         if assignation.keyFnAssignation.selection == KeyAssignation.CHARACTER :
@@ -253,17 +342,28 @@ class ButtonsState :
         elif self.mouseState.enabled and not assignation.isMouseModeEnabler():
             #print("mouse enabler")
             self.triggerMouseFunction(row, column, pressed)        
-        elif assignation.isCharacter():
-            #print("assignation.isCharacter()")
-            self.triggerCharacter(assignation.keyAssignation.keycode, pressed)
         elif assignation.isMediaKey():
             #print("assignation.isMediaKey()")
-            self.triggerMediaCode(assignation.keyAssignation.mediaConsumerControlCode,pressed)            
+            self.triggerMediaCode(assignation.keyAssignation.mediaConsumerControlCode,pressed)       
         elif assignation.isMouseModeEnabler():
             #print("assignation.isMouseModeEnabler()")
             self.mouseState.enabled = pressed
-        elif assignation.isFn():            
+            #self.triggerCharacter(Keycode.SHIFT, pressed)
+        
+            #self.triggerCharacter(Keycode.RIGHT_ALT, pressed)
+        elif assignation.isFn():
             self.fnMode = pressed
-            #print("assignation.isFn(): ", self.fnMode )
-
+            print("self.fnMode ", self.fnMode)
+        elif assignation.isCharacter() :            
+            self.triggerCharacter(assignation.keyAssignation.keycode, pressed)
+            if assignation.isShift():            
+                self.shiftPressed  = pressed
+                print("self.shiftPressed ", self.shiftPressed)
+            elif assignation.isAltGr():
+                #print("assignation.isMouseModeEnabler()")
+                self.altGrPressed  = pressed
+                print("self.altGrPressed ", self.altGrPressed)
+        elif assignation.isSpecialCharacterSequence():
+            # print("assignation.isSpecialCharacterSequence()", *assignation.keyAssignation.keycode)
+            self.triggerSCS(pressed, assignation.keyAssignation)            
 

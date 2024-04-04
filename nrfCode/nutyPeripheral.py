@@ -15,10 +15,12 @@ class NutyPeripheralBase :
          self.rowOffset = 0;
          self.columnOffset = 0;
          self.buttonsState = None
+         #self.startTime =   time.monotonic()
          
 class NutyPeripheral(NutyPeripheralBase):
     id = 0
     nKeys = 0
+    
     def __init__(self):
         super().__init__()
         
@@ -49,6 +51,9 @@ class NutyPeripheral(NutyPeripheralBase):
         bus_device.write(bytesToWrite)
         result = bytearray(6)
         ret = False;
+        #now = time.monotonic()
+       
+        
         try :
             bus_device.readinto(result)
             ret = True  

@@ -43,13 +43,16 @@ class KeyAssignation(object):
     MOUSE_MODE = 4
     MOUSE_CODE = 5
     MIDI = 6
-    LAYER_OR_SETTINGS = 7
+    LAYER_OR_SETTINGS = 7    
+    SPECIAL_CHARACTER_SEQUENCE = 8
     def __init__( self, newVal ):
         self.keycode = None
+        self.shiftKeycode = None
+        self.altGrKeycode = None
         self.mediaConsumerControlCode = None
         self.midiCode = None
         self.mouseCode = None
-        if newVal in ( self.NONE, self.CHARACTER, self.MEDIA , self.FN, self.MOUSE_MODE, self.MIDI, self.LAYER_OR_SETTINGS):            
+        if newVal in ( self.NONE, self.CHARACTER, self.MEDIA , self.FN, self.MOUSE_MODE, self.MOUSE_CODE, self.MIDI, self.LAYER_OR_SETTINGS, self.SPECIAL_CHARACTER_SEQUENCE):            
             self.selection= newVal
         else :
             self.selection= self.NONE
@@ -73,15 +76,16 @@ class ButtonRegister :
     def isShift(self):
         if not self.isCharacter() :
             return False
-        return self.keyAssignation.keyCode == KeyCode.SHIFT
+        return self.keyAssignation.keycode == Keycode.SHIFT  
+    
     def isAlt(self):
         if not self.isCharacter() :
             return False
-        return self.keyAssignation.keyCode == KeyCode.ALT
+        return self.keyAssignation.keycode == Keycode.ALT
     def isAltGr(self):
         if not self.isCharacter() :
             return False
-        return self.keyAssignation.keyCode == KeyCode.RIGHT_ALT
+        return self.keyAssignation.keycode == Keycode.RIGHT_ALT
     def isFn(self):        
         return self.keyAssignation.selection == KeyAssignation.FN
     def isLayerOrSettings(self):        
@@ -92,6 +96,8 @@ class ButtonRegister :
         return self.keyAssignation.selection == KeyAssignation.MIDI
     def isMediaKey(self):        
         return self.keyAssignation.selection == KeyAssignation.MEDIA
+    def isSpecialCharacterSequence(self):        
+        return self.keyAssignation.selection == KeyAssignation.SPECIAL_CHARACTER_SEQUENCE
         
 class MouseState :
     def __init__(self):
